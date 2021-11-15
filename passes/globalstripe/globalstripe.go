@@ -13,6 +13,8 @@ import (
 var doc = `If you need to run stripe with multiple API keys, you'll need to use the stripe client and 
 not the global functions. This vet tool will check for those function calls and give you a warning.`
 
+// Analyzer vets the inspected code for global functions that use the default Stripe client while your project should
+// use specific Stripe clients.
 var Analyzer = &analysis.Analyzer{
 	Name: "globalstripe",
 	Doc:  doc,

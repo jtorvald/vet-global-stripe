@@ -3,12 +3,13 @@ package globalstripe
 import (
 	"fmt"
 	"go/types"
+	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/buildssa"
 	"golang.org/x/tools/go/analysis/passes/inspect"
-	"strings"
 	"golang.org/x/tools/go/ssa"
-	"golang.org/x/tools/go/analysis"
+	"strings"
 )
+
 var doc = `If you need to run stripe with multiple API keys, you'll need to use the stripe client and 
 not the global functions. This vet tool will check for those function calls and give you a warning.`
 
@@ -19,7 +20,7 @@ var Analyzer = &analysis.Analyzer{
 		inspect.Analyzer,
 		buildssa.Analyzer,
 	},
-	Run:  run,
+	Run: run,
 }
 
 var stripeFunctions = []string{
@@ -360,10 +361,10 @@ func run(pass *analysis.Pass) (interface{}, error) {
 					// check if the call ends with the stripe functions that call getC()
 					if found, fun := functionInSlice(common.Value.String(), stripeFunctions); found {
 						pass.Report(analysis.Diagnostic{
-							Pos:            common.Pos(),
-							End:            0,
-							Category:       "",
-							Message:        fmt.Sprintf("don't use global stripe function: %s", fun),
+							Pos:      common.Pos(),
+							End:      0,
+							Category: "",
+							Message:  fmt.Sprintf("don't use global stripe function: %s", fun),
 						})
 					}
 				}
@@ -384,7 +385,7 @@ func functionInSlice(a string, list []string) (bool, string) {
 
 func imports(pkg *types.Package, path string) bool {
 	for _, imp := range pkg.Imports() {
-		if strings.Contains(imp.Path(), path)  {
+		if strings.Contains(imp.Path(), path) {
 			return true
 		}
 	}
